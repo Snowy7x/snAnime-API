@@ -59,6 +59,7 @@ function getAnimeById(id) {
             data = yield getAnimeById(id);
         if (!data.hasOwnProperty("anime_name"))
             return null;
+        console.log(data);
         console.log("Fetching the mal videos...");
         let data2 = yield (0, malVideos_1.default)(data.anime_name);
         console.log("Fetching the mal pictures...");
