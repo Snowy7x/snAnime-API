@@ -75,12 +75,12 @@ export async function getAnimeById(id: number): Promise<AnimeDetails | null> {
     if (!data.hasOwnProperty("anime_name")) return null;
     console.log(data)
     console.log("Fetching the mal videos...");
-    let data2 = await getVideos(data.anime_name);
+    let data2: any = null;//await getVideos(data.anime_name);
     console.log("Fetching the mal pictures...");
-    let data3 = await getPictures({
+    let data3: any = null;/*await getPictures({
         name: data.anime_name,
         id: data2.id,
-    });
+    });*/
 
     console.log("Preparing Data");
 
@@ -94,7 +94,7 @@ export async function getAnimeById(id: number): Promise<AnimeDetails | null> {
         data.anime_rating
     );
     anime.bannerUrl =
-        data3.length > 0
+        data3 && data3.length > 0
             ? data3[data3.length - 1]?.imageLink
             : data.anime_banner_image_url ??
             data.anime_cover_image_full_url ??
@@ -107,7 +107,7 @@ export async function getAnimeById(id: number): Promise<AnimeDetails | null> {
         let number = ep.episode_name
             .replaceAll("الحلقة : ", "")
             .replace(" - فلر", "");
-        let ep_ = data2.episodes?.find((ep: any) => ep.episodeNumber === number);
+        let ep_ = data2?.episodes?.find((ep: any) => ep.episodeNumber === number);
         if (ep_) {
             episodes.push(new EpisodeDetails(["", ""], ep_.thumbnail, number));
         } else {
