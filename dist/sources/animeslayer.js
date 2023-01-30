@@ -61,8 +61,8 @@ function getAnime(animeId) {
             headers: headers,
             params: {
                 anime_id: animeId,
-                fetch_episodes: "No",
-                more_info: "No",
+                fetch_episodes: "Yes",
+                more_info: "Yes",
             },
         })
             .then((res) => {
