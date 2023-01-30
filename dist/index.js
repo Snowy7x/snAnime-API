@@ -39,6 +39,6 @@ app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 // app.use("/ar/v1", require("./routes/ar/v1"))
 app.use("/v2/ar", ar.router);
-app.listen(3069, () => {
-    console.log("Listening on port: 3069");
+app.listen(3030, () => {
+    console.log("Listening on port: 3030");
 });
