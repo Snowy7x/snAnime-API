@@ -173,7 +173,7 @@ function getWatchLinks(animeId, episodeId) {
                                 ? "480p"
                                 : "av";
                     js[i].file =
-                        "http://31.187.75.164:3069/ar/v2/proxy?url=" +
+                        "http://191.101.2.27:3030/ar/v2/proxy?url=" +
                             encodeURIComponent(js[i].file);
                 }
                 return js;
