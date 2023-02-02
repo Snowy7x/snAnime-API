@@ -12,9 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAnime = exports.getAnimeList = void 0;
+exports.getAnime = exports.getAnimeList = exports.getWatchLinks = exports.getEpisode = void 0;
 const axios_1 = __importDefault(require("axios"));
 const anDecoder_1 = require("./helpers/anDecoder");
+const rncryptor_node_1 = __importDefault(require("rncryptor-node"));
+const interfaces_1 = require("../routes/interfaces");
 const published_url = "https://anslayer.com/anime/public/animes/get-published-animes";
 const details_url = "https://anslayer.com/anime/public/anime/get-anime-details";
 const headers = {
@@ -30,6 +32,7 @@ const headers = {
  */
 function getAnimeList(list_type, limit = 10, offset = 0, searchParams = null) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("getAnimeList");
         return yield (0, axios_1.default)({
             method: "GET",
             url: published_url,
@@ -40,6 +43,7 @@ function getAnimeList(list_type, limit = 10, offset = 0, searchParams = null) {
         })
             .then((res) => {
             res.data = res.data.response.data;
+            console.log("Fetched");
             return res;
         })
             .catch((err) => err);
@@ -104,14 +108,19 @@ function getEpisode(animeId, episodeId) {
         });
     });
 }
+exports.getEpisode = getEpisode;
 function getWatchLinks(animeId, episodeId) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(animeId, episodeId);
         let episode = yield getEpisode(animeId, episodeId);
         if (episode.code !== 200) {
             return [];
         }
+        console.log("Fetching episode watch links");
         let servers = [];
         const urls = episode.data.episode_urls;
+        if (!urls || urls.length === 0)
+            return [];
         const normal_servers = yield axios_1.default
             .post("https://anslayer.com/la/public/api/fw", new URLSearchParams({
             n: urls[1].episode_url.replace("https://anslayer.com/la/public/api/f2?n=", ""),
@@ -137,6 +146,41 @@ function getWatchLinks(animeId, episodeId) {
                 }
             }
         }
+        if (servers.length <= 0) {
+            const url_ = new URL(urls[0].episode_url);
+            const params_ = url_.searchParams;
+            const og_urls = yield axios_1.default
+                .post("https://anslayer.com/anime/public/v-qs.php", new URLSearchParams({
+                f: params_.get("f"),
+                e: params_.get("e"),
+                inf: '{"a": "mrg+e9GTkHaj8WXD7Cz3+Wbc1E4xYrvHLqW1vRF8xSo2B4K7Y5B7wcjHaoL1haW8Ynp3gYuGBRWFY/XaoEzVRcM/g8pJtaAT3FgwZh+KajpmkenxL0V/ghBXTwctGtEQFUO/UAJVGx2QClCE6gKSTQ==", "b": "102.185.179.127"}',
+            }), {
+                headers: {
+                    "User-Agent": "okhttp/3.12.12",
+                    Host: "anslayer.com",
+                },
+            })
+                .then((re) => {
+                let decrypted = rncryptor_node_1.default.Decrypt(re.data, "android-app9>E>VBa=X%;[5BX~=Q~K");
+                let js = JSON.parse(decrypted.toString());
+                for (let i in js) {
+                    let link = js[i].file;
+                    js[i].label = link.includes("h.mp4")
+                        ? "1080p"
+                        : link.includes("m.mp4")
+                            ? "720p"
+                            : link.includes("s.mp4")
+                                ? "480p"
+                                : "av";
+                    js[i].file =
+                        "http://31.187.75.164:3069/ar/v2/proxy?url=" +
+                            encodeURIComponent(js[i].file);
+                }
+                return js;
+            });
+            servers.push(new interfaces_1.StreamingLink(-1, "https://www.snanime.com", "www.snanime.com", og_urls));
+        }
         return servers;
     });
 }
+exports.getWatchLinks = getWatchLinks;

@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.search = exports.getAnimeById = exports.getLatest = exports.getTopAiring = void 0;
+exports.getStreamingLinks = exports.search = exports.getAnimeById = exports.getLatest = exports.getTopAiring = void 0;
 const animeslayer_1 = require("../../sources/animeslayer");
 const interfaces_1 = require("../interfaces");
 function getTopAiring(offset = 0, limit = 18) {
     return __awaiter(this, void 0, void 0, function* () {
         let data = yield (0, animeslayer_1.getAnimeList)("top_currently_airing", limit, offset);
         if (data.status !== 200)
-            data = yield (0, animeslayer_1.getAnimeList)("top_currently_airing", 18, 0);
+            data = yield (0, animeslayer_1.getAnimeList)("top_currently_airing", limit, offset);
         if (data.status !== 200)
             return null;
         let animes = [];
@@ -76,10 +76,10 @@ function getAnimeById(id) {
                     .replace(" - فلر", "");
                 let ep_ = (_e = data2 === null || data2 === void 0 ? void 0 : data2.episodes) === null || _e === void 0 ? void 0 : _e.find((ep) => ep.episodeNumber === number);
                 if (ep_) {
-                    anime.episodes.push(new interfaces_1.EpisodeDetails(["", ""], ep_.thumbnail, number, isFiller));
+                    anime.episodes.push(new interfaces_1.EpisodeDetails(ep.episode_id, ["", ""], ep_.thumbnail, number, isFiller));
                 }
                 else {
-                    anime.episodes.push(new interfaces_1.EpisodeDetails(["", ""], anime.bannerUrl, number, isFiller));
+                    anime.episodes.push(new interfaces_1.EpisodeDetails(ep.episode_id, ["", ""], anime.bannerUrl, number, isFiller));
                 }
             }
         return anime;
@@ -103,6 +103,13 @@ function search(offset = 0, limit = 18, searchParams) {
     });
 }
 exports.search = search;
+function getStreamingLinks(animeId, episodeId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let data = yield (0, animeslayer_1.getWatchLinks)(animeId, episodeId);
+        return data;
+    });
+}
+exports.getStreamingLinks = getStreamingLinks;
 function isIterable(obj) {
     // checks for null and undefined
     if (obj == null) {

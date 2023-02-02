@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = __importDefault(require("express"));
 const controller_1 = require("./controller");
+const node_fetch_1 = __importDefault(require("node-fetch"));
 let router = express_1.default.Router();
 exports.router = router;
 router.get("/latest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,9 +49,62 @@ router.get("/search", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         anime_season: season,
         anime_type: type,
         anime_genre_ids: genre,
-        anime_release_years: years
+        anime_release_years: years,
     });
     if (animes === null)
         return res.sendStatus(422);
     return res.send(animes);
 }));
+router.get("/watch", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { animeId, episodeId } = req.query;
+    if (!animeId || !episodeId)
+        return res
+            .status(422)
+            .send("Missing one/all argument/s {animeId, episodeId}");
+    const anime = yield (0, controller_1.getStreamingLinks)(animeId, episodeId);
+    if (anime === null)
+        return res.sendStatus(422);
+    res.send(anime);
+}));
+router.get("/proxy", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { url } = req.query;
+    if (!url)
+        return res.status(404).json({ success: false });
+    url = decodeURIComponent(url.toString());
+    console.log(`Proxy URL: ${url}`);
+    return yield (0, node_fetch_1.default)(url, {
+        headers: { range: req.headers.range },
+    })
+        .then((response) => __awaiter(void 0, void 0, void 0, function* () {
+        if (!response.ok)
+            return res.status(404).json({ success: false, data: response });
+        res.set(yield getFetchHeader(response.headers));
+        response.body.pipe(res.status(206));
+        response.body.on("error", () => { });
+    }))
+        .catch((err) => {
+        console.log("Could not fetch, trying again", err.message);
+        (0, node_fetch_1.default)(url.toString(), {
+            headers: { range: req.headers.range },
+        })
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log("Fetching", response);
+            if (!response.ok)
+                return res.status(404).json({ success: false, data: response });
+            res.set(yield getFetchHeader(response.headers));
+            response.body.pipe(res.status(206));
+            response.body.on("error", () => { });
+        }))
+            .catch((err) => {
+            console.log("Could not fetch, sorry", err.message);
+            res.status(404).json({ success: false, data: err.message });
+        });
+    });
+}));
+const getFetchHeader = (headers) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = {};
+    for (let [key, value] of headers) {
+        data[key] = value;
+    }
+    return data;
+});

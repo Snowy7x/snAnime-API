@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EpisodeDetails = exports.Relation = exports.AnimeDetails = exports.LatestEpisode = exports.SearchResult = exports.TopAnime = void 0;
+exports.StreamingLink = exports.EpisodeDetails = exports.Relation = exports.AnimeDetails = exports.LatestEpisode = exports.SearchResult = exports.TopAnime = void 0;
 class TopAnime {
     constructor(id, number = 0, name, type, status, releaseYear, genres, rate, coverUrl) {
         this.id = id;
@@ -65,7 +65,8 @@ class Relation {
 }
 exports.Relation = Relation;
 class EpisodeDetails {
-    constructor(links, thumbnailUrl, episodeNumber, isFiller) {
+    constructor(id, links, thumbnailUrl, episodeNumber, isFiller) {
+        this.id = id;
         this.links = links;
         this.thumbnailUrl = thumbnailUrl;
         this.episodeNumber = episodeNumber;
@@ -73,3 +74,12 @@ class EpisodeDetails {
     }
 }
 exports.EpisodeDetails = EpisodeDetails;
+class StreamingLink {
+    constructor(type, url, host, urls) {
+        this.type = type;
+        this.url = url;
+        this.host = host;
+        this.urls = urls;
+    }
+}
+exports.StreamingLink = StreamingLink;

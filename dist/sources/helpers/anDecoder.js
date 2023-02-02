@@ -150,7 +150,7 @@ function MyStream(url, content) {
     var urls = [];
     var myRegEx = /src="(https:\/\/.*.mstreamcdn\.com.*?\.mp4)">/g;
     var matches = getMatches(content, myRegEx, 1);
-    for (i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) {
         if (matches[i] !== undefined) {
             var link = matches[i];
             urls.push({
@@ -171,7 +171,7 @@ function Mediafire(url, content) {
     var urls = [];
     var myRegEx = /href\s?=\s?.(https?:\/\/download\d{1,6}\.mediafire\.com.*?\.mp4)./g;
     var matches = getMatches(content, myRegEx, 1);
-    for (i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) {
         if (matches[i] !== undefined) {
             var link = matches[i];
             urls.push({
@@ -193,7 +193,7 @@ function fasttoplay(url, content) {
     var myRegEx = /file:"(https.*?),.urlset\/master.m3u8"/g;
     var matches = getMatches(content, myRegEx, 1)[0].replace("\\", "");
     var matches2 = matches.split(",");
-    for (i = 1; i < matches2.length; i++) {
+    for (let i = 1; i < matches2.length; i++) {
         var links = matches2[0] + matches2[i] + "/index-v1-a1.m3u8";
         if (links[i] !== undefined && !links.includes("window.jawplayer")) {
             for (let l of links) {
@@ -259,7 +259,7 @@ function vidlox(url, content) {
     var myRegEx = /sources\s*:\s*\[(.+?)\]/g;
     var matches = getMatches(content, myRegEx, 1);
     var res = matches[0].split('","');
-    for (i = 0; i < res.length; i++) {
+    for (let i = 0; i < res.length; i++) {
         var link = res[i].replace('"', "");
         if (link.includes(".mp4")) {
             urls.push({
@@ -319,7 +319,7 @@ function vk(url, content) {
     var urls = [];
     var myRegEx = /<source\s*src=\\"(.*?)\\"/g;
     var matches = getMatches(content, myRegEx, 1);
-    for (i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) {
         var link = matches[i].replace(/[\\]/g, "");
         if (link.includes(".mp4")) {
             urls.push({
@@ -371,7 +371,7 @@ function cloudvideo(url, content) {
         }
     }
     else {
-        for (i = 2; i < matches.length; i++) {
+        for (let i = 2; i < matches.length; i++) {
             link = matches[1] + matches[i] + "/index-v1-a1.m3u8";
             if (!link.includes("undefined")) {
                 urls.push({
@@ -392,12 +392,12 @@ function cloudvideo(url, content) {
 function fembed(url, content) {
     var urls = [];
     var myArr = content;
-    for (i = 0; i < myArr["data"].length; i++) {
+    for (let i = 0; i < myArr["data"].length; i++) {
         var link = myArr["data"][i]["file"];
         var label = myArr["data"][i]["label"];
         if (link) {
             urls.push({
-                file: "http://31.187.75.164:3069/ar/v2/proxy?url=" +
+                file: "http://150.168.50.115:3030/v2/ar/proxy?url=" +
                     encodeURIComponent(link),
                 label: label,
             });
@@ -425,7 +425,7 @@ function jawcloud(url, content) {
         }
     }
     else {
-        for (i = 2; i < matches.length; i++) {
+        for (let i = 2; i < matches.length; i++) {
             link = matches[1] + matches[i] + "/index-v1-a1.m3u8";
             if (!link.includes("undefined") && !link.includes("window.jawplayer")) {
                 urls.push({
@@ -447,7 +447,7 @@ function clipwatching(url, content) {
     var urls = [];
     var myRegEx = /"(http.*?\/v\.mp4)"/g;
     var matches = getMatches(content, myRegEx, 1);
-    for (i = 0; i < matches.length; i++) {
+    for (let i = 0; i < matches.length; i++) {
         var link = matches[i];
         urls.push({
             file: link,
@@ -466,7 +466,7 @@ function vidfast(url, content) {
     var urls = [];
     var myRegEx = /sources:\s\[{file:"(https:.*?),(.*?),(.*?),\.urlset\/master\.m3u8"/g;
     var matches = myRegEx.exec(content);
-    for (i = 2; i < matches.length; i++) {
+    for (let i = 2; i < matches.length; i++) {
         var link = matches[1] + matches[i] + "/index-v1-a1.m3u8";
         if (!link.includes("undefined") && !link.includes("window.jawplayer")) {
             urls.push(link);
@@ -484,7 +484,7 @@ function vidsat(url, content) {
     var urls = [];
     var myRegEx = /sources:\s\[{file:"(https:.*?),(.*?),(.*?),\.urlset\/master\.m3u8"/g;
     var matches = myRegEx.exec(content);
-    for (i = 2; i < matches.length; i++) {
+    for (let i = 2; i < matches.length; i++) {
         var link = matches[1] + matches[i] + "/index-v1-a1.m3u8";
         if (!link.includes("undefined") && !link.includes("window.jawplayer")) {
             urls.push(link);
@@ -538,24 +538,5 @@ function unpack(str) {
     return str;
 }
 function unpack_chunk(str) {
-    var unpacked_source = "";
-    var __eval = eval;
-    if (detect(str)) {
-        try {
-            eval = function (s) {
-                // jshint ignore:line
-                unpacked_source += s;
-                return unpacked_source;
-            }; // jshint ignore:line
-            __eval(str);
-            if (typeof unpacked_source === "string" && unpacked_source) {
-                str = unpacked_source;
-            }
-        }
-        catch (e) {
-            // well, it failed. we'll just return the original, instead of crashing on user.
-        }
-    }
-    eval = __eval; // jshint ignore:line
     return str;
 }
