@@ -22,34 +22,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const mongoose_1 = __importDefault(require("mongoose"));
-const app = (0, express_1.default)();
-const cors_1 = __importDefault(require("cors"));
-const ar = __importStar(require("./routes/ar"));
-const corsOptions = {
-    origin: "*",
-    credentials: true,
-    optionSuccessStatus: 200,
-};
-app.use((0, cors_1.default)(corsOptions));
-app.use(express_1.default.json());
-// app.use("/ar/v1", require("./routes/ar/v1"))
-app.use("/v2/ar", ar.router);
-const uri = "mongodb+srv://snowy:KoHQsXrjrtl2nuji@snanimecluster.fnvdteq.mongodb.net/?retryWrites=true&w=majority";
-mongoose_1.default.connect(uri, {
-    autoIndex: true,
+exports.Anime = exports.AnimeSchema = exports.AnimeComments = exports.CommentSchema = void 0;
+const mongoose_1 = __importStar(require("mongoose"));
+exports.CommentSchema = new mongoose_1.Schema({
+    text: String,
+    username: String,
+    coverUrl: String,
+    likes: Number,
 });
-mongoose_1.default.connection.on("error", (err) => {
-    console.log("Database Connection ERROR: " + err.message);
+exports.AnimeComments = new mongoose_1.Schema({
+    animeId: Number,
+    comments: [exports.CommentSchema],
 });
-mongoose_1.default.connection.on("open", () => {
-    console.log("Connected to db.");
-    app.listen(3030, () => {
-        console.log("Listening on port: 3030");
-    });
+exports.AnimeSchema = new mongoose_1.Schema({
+    id: String,
+    name: String,
+    description: String,
+    genre: String,
+    episodes: Number,
+    episodesIds: Number,
+    comments: exports.AnimeComments,
 });
+exports.Anime = mongoose_1.default.model("Anime", exports.AnimeSchema);

@@ -1,12 +1,16 @@
-interface ITopAnime {
+interface ISearchResult {
   id: number;
-  number: number;
   name: string;
   type: string;
   status: string;
   releaseYear: number;
   genres: string;
   coverUrl: string;
+  rate: string;
+}
+
+interface ITopAnime extends ISearchResult {
+  number: number;
 }
 
 export class TopAnime implements ITopAnime {
@@ -18,6 +22,20 @@ export class TopAnime implements ITopAnime {
     public status: string,
     public releaseYear: number,
     public genres: string,
+    public rate: string,
+    public coverUrl: string
+  ) {}
+}
+
+export class SearchResult implements ISearchResult {
+  constructor(
+    public id: number,
+    public name: string,
+    public type: string,
+    public status: string,
+    public releaseYear: number,
+    public genres: string,
+    public rate: string,
     public coverUrl: string
   ) {}
 }
@@ -45,7 +63,7 @@ export class LatestEpisode implements ILatestEpisode {
 }
 
 interface IAnimeDetails {
-  id: number;
+  id: number | string;
   name: string;
   coverUrl: string;
   bannerUrl: string;
@@ -63,7 +81,7 @@ export class AnimeDetails implements IAnimeDetails {
   public relations: Relation[] = [];
 
   constructor(
-    public id: number,
+    public id: number | string,
     public name: string,
     public coverUrl: string,
     public description: string,
@@ -73,23 +91,49 @@ export class AnimeDetails implements IAnimeDetails {
   ) {}
 }
 
-export interface Relation {
+interface IRelation {
   id: number;
   name: string;
   rate: string;
   coverUrl: string;
 }
 
+export class Relation implements IRelation {
+  constructor(
+    public id: number,
+    public name: string,
+    public rate: string,
+    public coverUrl: string
+  ) {}
+}
+
 interface IEpisodeDetails {
   links: string[];
   thumbnailUrl: string;
   episodeNumber: number;
+  isFiller: boolean;
 }
 
 export class EpisodeDetails implements IEpisodeDetails {
   constructor(
+    public id: number,
     public links: string[],
     public thumbnailUrl: string,
-    public episodeNumber: number
+    public episodeNumber: number,
+    public isFiller: boolean
+  ) {}
+}
+
+type Link = {
+  file: string;
+  label: string;
+};
+
+export class StreamingLink {
+  constructor(
+    public type,
+    public url: string,
+    public host: string,
+    public urls: Link[]
   ) {}
 }
