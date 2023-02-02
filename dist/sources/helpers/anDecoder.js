@@ -397,7 +397,7 @@ function fembed(url, content) {
         var label = myArr["data"][i]["label"];
         if (link) {
             urls.push({
-                file: "http://150.168.50.115:3030/v2/ar/proxy?url=" +
+                file: "http://191.101.2.27:3030/v2/ar/proxy?url=" +
                     encodeURIComponent(link),
                 label: label,
             });
