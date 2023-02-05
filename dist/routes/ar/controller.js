@@ -63,7 +63,6 @@ function getAnimeById(id) {
                 ? (_b = data3[data3.length - 1]) === null || _b === void 0 ? void 0 : _b.imageLink
                 : (_d = (_c = data.anime_banner_image_url) !== null && _c !== void 0 ? _c : data.anime_cover_image_full_url) !== null && _d !== void 0 ? _d : data.anime_cover_image_url;
         anime.relations = [];
-        console.log(data.related_animes);
         if (data.related_animes && isIterable(data.related_animes.data))
             for (let an of data.related_animes.data) {
                 anime.relations.push(new interfaces_1.Relation(an.related_anime_id, an.anime_name, an.anime_rating, an.anime_cover_image_url));
