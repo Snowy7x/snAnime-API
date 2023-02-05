@@ -105,12 +105,13 @@ export async function getAnimeById(
         data.anime_cover_image_url;
 
   anime.relations = [];
+  console.log(data.related_animes);
 
   if (data.related_animes && isIterable(data.related_animes.data))
     for (let an of data.related_animes.data) {
       anime.relations.push(
         new Relation(
-          an.related_anime_pk_id,
+          an.related_anime_id,
           an.anime_name,
           an.anime_rating,
           an.anime_cover_image_url
