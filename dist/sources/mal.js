@@ -12,13 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAnimeByName = void 0;
+exports.getVideosByName = exports.getAnimeByName = void 0;
 const malVideos_1 = __importDefault(require("./helpers/malVideos"));
+const mal_scraper_1 = require("mal-scraper");
 function getAnimeByName(animeName) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, malVideos_1.default)(animeName).then((re) => {
-            console.log(re);
-        });
+        return yield (0, mal_scraper_1.getInfoFromName)(animeName);
     });
 }
 exports.getAnimeByName = getAnimeByName;
+function getVideosByName(animeName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield (0, malVideos_1.default)(animeName);
+    });
+}
+exports.getVideosByName = getVideosByName;

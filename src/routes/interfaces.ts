@@ -65,12 +65,18 @@ export class LatestEpisode implements ILatestEpisode {
 interface IAnimeDetails {
   id: number | string;
   name: string;
+  type: string;
   coverUrl: string;
   bannerUrl: string;
   description: string;
   genres: string;
   releaseYear: string;
   rate: string;
+  ratedBy: string;
+  episodesCount: number;
+  episodeDuration: string;
+  trailerUrl: string;
+  source: string;
   episodes: EpisodeDetails[];
   relations: Relation[];
 }
@@ -83,11 +89,17 @@ export class AnimeDetails implements IAnimeDetails {
   constructor(
     public id: number | string,
     public name: string,
+    public type: string,
     public coverUrl: string,
     public description: string,
     public genres: string,
     public releaseYear: string,
-    public rate: string
+    public rate: string,
+    public source: string,
+    public ratedBy: string,
+    public trailerUrl: string,
+    public episodesCount: number,
+    public episodeDuration: string
   ) {}
 }
 

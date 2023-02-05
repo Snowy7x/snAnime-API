@@ -2,7 +2,7 @@ import { getPictures } from "mal-scraper";
 import { getAnimeByName } from "../../sources/anilist";
 import {
   getAnime,
-  getAnimeList,
+  getAnimeList, getEpisodesList,
   getWatchLinks,
 } from "../../sources/animeslayer";
 import getVideos from "../../sources/helpers/malVideos";
@@ -91,11 +91,17 @@ export async function getAnimeById(
   let anime: AnimeDetails = new AnimeDetails(
     id,
     data.anime_name,
+    data.anime_type,
     data.anime_cover_image_full_url ?? data.anime_cover_image_url,
     data.anime_description,
     data.anime_genres,
     data.anime_release_year,
-    data.anime_rating
+    data.anime_rating,
+      data?.more_info_result?.source ?? "Unknown",
+      data?.more_info_result?.scored_by ?? data.anime_rating_user_count,
+      data?.more_info_result?.trailer_url ?? data.anime_trailer_url,
+      data.episodes.count,
+      data?.more_info_result?.duration ?? "00:00"
   );
   anime.bannerUrl =
     data3 && data3.length > 0
@@ -116,38 +122,6 @@ export async function getAnimeById(
           an.anime_cover_image_url
         )
       );
-    }
-
-  anime.episodes = [];
-
-  if (data.episodes && isIterable(data.episodes.data))
-    for (let ep of data.episodes.data) {
-      let isFiller = ep.episode_name.includes("فلر");
-      let number = ep.episode_name
-        .replaceAll("الحلقة : ", "")
-        .replace(" - فلر", "");
-      let ep_ = data2?.episodes?.find((ep: any) => ep.episodeNumber === number);
-      if (ep_) {
-        anime.episodes.push(
-          new EpisodeDetails(
-            ep.episode_id,
-            ["", ""],
-            ep_.thumbnail,
-            number,
-            isFiller
-          )
-        );
-      } else {
-        anime.episodes.push(
-          new EpisodeDetails(
-            ep.episode_id,
-            ["", ""],
-            anime.bannerUrl,
-            number,
-            isFiller
-          )
-        );
-      }
     }
 
   return anime;
@@ -195,11 +169,49 @@ export async function getStreamingLinks(
   animeId,
   episodeId
 ): Promise<StreamingLink[]> {
-  let data = await getWatchLinks(animeId, episodeId);
-  return data;
+  return await getWatchLinks(animeId, episodeId);
 }
 
-function isIterable(obj: any) {
+export async function getEpisodes(id: number, animeName: string) : Promise<any> {
+  let episodes = await getEpisodesList(id);
+  let videos = await getVideos(animeName)
+
+  let eps = [];
+
+  if (episodes && isIterable(episodes.data))
+    for (let ep of episodes.data) {
+      let isFiller = ep.episode_name.includes("فلر");
+      let number = ep.episode_name
+          .replaceAll("الحلقة : ", "")
+          .replace(" - فلر", "");
+      let ep_ = videos?.episodes?.find((ep: any) => ep.episodeNumber === number);
+      if (ep_) {
+        eps.push(
+            new EpisodeDetails(
+                ep.episode_id,
+                ["", ""],
+                ep_.thumbnail,
+                number,
+                isFiller
+            )
+        );
+      } else {
+        eps.push(
+            new EpisodeDetails(
+                ep.episode_id,
+                ["", ""],
+                null,
+                number,
+                isFiller
+            )
+        );
+      }
+    }
+
+  return eps
+}
+
+function isIterable(obj: any): boolean {
   // checks for null and undefined
   if (obj == null) {
     return false;

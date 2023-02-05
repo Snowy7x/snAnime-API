@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  getAnimeById,
+  getAnimeById, getEpisodes,
   getLatest,
   getStreamingLinks,
   getTopAiring,
@@ -31,6 +31,16 @@ router.get("/anime", async (req, res) => {
   res.send(anime);
 });
 
+router.get("/episodes", async (req, res) => {
+  const { id, animeName } = req.query;
+  if (id === undefined || animeName === undefined)
+    return res.status(422).send("Missing one/all argument/s {id, animeName}");
+  const anime = await getEpisodes(parseInt(id.toString()), animeName.toString());
+
+  if (anime === null) return res.sendStatus(422);
+  res.send(anime);
+});
+
 router.get("/top", async (req, res) => {
   const { offset, limit } = req.query;
   const animes = await getTopAiring(
@@ -44,7 +54,6 @@ router.get("/top", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   const { offset, limit, animeName, season, type, genre, years } = req.query;
-  console.log(offset, limit);
   const animes = await search(
     offset ? parseInt(offset.toString()) : undefined,
     limit ? parseInt(limit.toString()) : undefined,

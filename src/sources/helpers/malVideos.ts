@@ -5,11 +5,13 @@ import { matchSorter } from "match-sorter";
 
 const BASE_URI = "https://myanimelist.net/anime/";
 
+interface VideoInt { thumbnail: string, episodeNumber: string }
+
 const parsePage = ($: CheerioAPI, id: any = null) => {
   const items = $("#content .video-block .video-list-outer");
   const result = {
     id,
-    episodes: <any>[],
+    episodes: <VideoInt[]>[],
   };
 
   items.each(function () {

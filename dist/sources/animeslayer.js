@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAnime = exports.getAnimeList = exports.getWatchLinks = exports.getEpisode = void 0;
+exports.getAnime = exports.getAnimeList = exports.getWatchLinks = exports.getEpisodesList = exports.getEpisode = void 0;
 const axios_1 = __importDefault(require("axios"));
 const anDecoder_1 = require("./helpers/anDecoder");
 const rncryptor_node_1 = __importDefault(require("rncryptor-node"));
@@ -32,7 +32,6 @@ const headers = {
  */
 function getAnimeList(list_type, limit = 10, offset = 0, searchParams = null) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("getAnimeList");
         return yield (0, axios_1.default)({
             method: "GET",
             url: published_url,
@@ -43,7 +42,6 @@ function getAnimeList(list_type, limit = 10, offset = 0, searchParams = null) {
         })
             .then((res) => {
             res.data = res.data.response.data;
-            console.log("Fetched");
             return res;
         })
             .catch((err) => err);
@@ -109,6 +107,35 @@ function getEpisode(animeId, episodeId) {
     });
 }
 exports.getEpisode = getEpisode;
+function getEpisodesList(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield axios_1.default.post('https://anslayer.com/anime/public/episodes/get-episodes-new', new URLSearchParams({
+            'inf': '',
+            'json': `{"more_info":"No","anime_id":${id}}`
+        }), {
+            headers: {
+                'Client-Id': 'android-app2',
+                'Client-Secret': '7befba6263cc14c90d2f1d6da2c5cf9b251bfbbd',
+                'Accept': 'application/json, application/*+json',
+                'Connection': 'Keep-Alive',
+                'User-Agent': 'okhttp/3.12.12'
+            }
+        }).then(function (response) {
+            return {
+                code: 200,
+                data: response.data.response.data,
+            };
+        })
+            .catch(function (error) {
+            console.log("ar/v2/episode [41] Error:", error.message);
+            return {
+                code: 400,
+                data: error.message,
+            };
+        });
+    });
+}
+exports.getEpisodesList = getEpisodesList;
 function getWatchLinks(animeId, episodeId) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(animeId, episodeId);

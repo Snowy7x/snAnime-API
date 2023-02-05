@@ -41,14 +41,20 @@ class LatestEpisode {
 }
 exports.LatestEpisode = LatestEpisode;
 class AnimeDetails {
-    constructor(id, name, coverUrl, description, genres, releaseYear, rate) {
+    constructor(id, name, type, coverUrl, description, genres, releaseYear, rate, source, ratedBy, trailerUrl, episodesCount, episodeDuration) {
         this.id = id;
         this.name = name;
+        this.type = type;
         this.coverUrl = coverUrl;
         this.description = description;
         this.genres = genres;
         this.releaseYear = releaseYear;
         this.rate = rate;
+        this.source = source;
+        this.ratedBy = ratedBy;
+        this.trailerUrl = trailerUrl;
+        this.episodesCount = episodesCount;
+        this.episodeDuration = episodeDuration;
         this.bannerUrl = "";
         this.episodes = [];
         this.relations = [];

@@ -34,6 +34,15 @@ router.get("/anime", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         return res.sendStatus(422);
     res.send(anime);
 }));
+router.get("/episodes", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, animeName } = req.query;
+    if (id === undefined || animeName === undefined)
+        return res.status(422).send("Missing one/all argument/s {id, animeName}");
+    const anime = yield (0, controller_1.getEpisodes)(parseInt(id.toString()), animeName.toString());
+    if (anime === null)
+        return res.sendStatus(422);
+    res.send(anime);
+}));
 router.get("/top", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { offset, limit } = req.query;
     const animes = yield (0, controller_1.getTopAiring)(offset ? parseInt(offset.toString()) : undefined, limit ? parseInt(limit.toString()) : undefined);
@@ -43,7 +52,6 @@ router.get("/top", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 }));
 router.get("/search", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { offset, limit, animeName, season, type, genre, years } = req.query;
-    console.log(offset, limit);
     const animes = yield (0, controller_1.search)(offset ? parseInt(offset.toString()) : undefined, limit ? parseInt(limit.toString()) : undefined, {
         anime_name: animeName,
         anime_season: season,

@@ -35,7 +35,6 @@ async function getAnimeList(
   offset = 0,
   searchParams: SearchParams | null = null
 ) {
-  console.log("getAnimeList");
   return await axios({
     method: "GET",
     url: published_url,
@@ -51,7 +50,6 @@ async function getAnimeList(
   })
     .then((res) => {
       res.data = res.data.response.data;
-      console.log("Fetched");
       return res;
     })
     .catch((err) => err);
@@ -120,6 +118,37 @@ export async function getEpisode(
         data: error.message,
       };
     });
+}
+
+export async function getEpisodesList(id: number) {
+  return await axios.post(
+      'https://anslayer.com/anime/public/episodes/get-episodes-new',
+      new URLSearchParams({
+        'inf': '',
+        'json': `{"more_info":"No","anime_id":${id}}`
+      }),
+      {
+        headers: {
+          'Client-Id': 'android-app2',
+          'Client-Secret': '7befba6263cc14c90d2f1d6da2c5cf9b251bfbbd',
+          'Accept': 'application/json, application/*+json',
+          'Connection': 'Keep-Alive',
+          'User-Agent': 'okhttp/3.12.12'
+        }
+      }
+  ).then(function (response) {
+    return {
+      code: 200,
+      data: response.data.response.data,
+    };
+  })
+      .catch(function (error) {
+        console.log("ar/v2/episode [41] Error:", error.message);
+        return {
+          code: 400,
+          data: error.message,
+        };
+      });
 }
 
 export async function getWatchLinks(
